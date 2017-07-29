@@ -4,29 +4,35 @@
 use std::sync::mpsc::Receiver;
 
 use minutiae::prelude::*;
-use minutiae::engine::serial::SerialEngine;
-use minutiae::engine::iterator::{SerialGridIterator, SerialEntityIterator};
+use minutiae::engine::iterator::SerialGridIterator;
+use minutiae::engine::parallel::ParallelEngine;
 
-use parser::{LogLine, LineType};
+use parser::{parse_line, LogLine};
 
-const UNIVERSE_SIZE: usize = 800;
+pub mod engine;
+pub mod entity_driver;
+pub use self::entity_driver::entity_driver;
 
-#[derive(Clone)]
+pub const UNIVERSE_SIZE: usize = 800;
+
+#[derive(Clone, Debug)]
 pub struct CS {}
 impl CellState for CS {}
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct ES {}
 impl EntityState<CS> for ES {}
 
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct MES {}
 impl MutEntityState for MES {}
 
+#[derive(Debug)]
 pub enum CA {}
 
 impl CellAction<CS> for CA {}
 
+#[derive(Debug)]
 pub enum EA {}
 impl EntityAction<CS, ES> for EA {}
 
@@ -38,9 +44,8 @@ impl Generator<CS, ES, MES, CA, EA> for WG {
     }
 }
 
-pub fn create_universe() -> Universe<CS, ES, MES, CA, EA> {
-    unimplemented!(); // TODO
-}
+// dummy function until `cell_mutator` is deprecated entirely
+pub fn cell_mutator(_: usize, _: &[Cell<CS>]) -> Option<CS> { None }
 
 /// Middleware that processes
 pub struct LineProcessorMiddleware {
@@ -48,18 +53,29 @@ pub struct LineProcessorMiddleware {
 }
 
 impl LineProcessorMiddleware {
-    pub fn new(rx: Receiver<String>) -> Self {
-        LineProcessorMiddleware { rx }
-    }
+    pub fn new(rx: Receiver<String>) -> Self { LineProcessorMiddleware { rx } }
 }
 
 impl Middleware<
-    CS, ES, MES, CA, EA, Box<SerialEngine<CS, ES, MES, CA, EA, SerialGridIterator, SerialEntityIterator<CS, ES>>>
+    CS, ES, MES, CA, EA, Box<ParallelEngine<CS, ES, MES, CA, EA, SerialGridIterator>>
 > for LineProcessorMiddleware {
     fn before_render(&mut self, universe: &mut Universe<CS, ES, MES, CA, EA>) {
         // collect all the lines from stdin into a buffer and process them
         let lines: Vec<String> = self.rx.try_iter().collect();
         // try to parse those lines
-
+        let parsed_lines: Vec<LogLine> = lines.into_iter()
+            .fold(Vec::new(), |mut acc, s| {
+                match parse_line(&s) {
+                    Ok(parsed) => {
+                        println!("PARSED LINE: {:?}", parsed);
+                        acc.push(parsed);
+                        acc
+                    },
+                    Err(err) => {
+                        println!("Error parsing log line: {}", err);
+                        acc
+                    },
+                }
+            });
     }
 }

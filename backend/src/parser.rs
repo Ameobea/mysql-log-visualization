@@ -7,6 +7,7 @@ use regex::{Captures, Match, Regex};
 
 use util::debug;
 
+#[derive(Debug)]
 pub enum LineType {
     Connect,
     Query,
@@ -28,6 +29,7 @@ impl<'a> TryFrom<Match<'a>> for LineType {
     }
 }
 
+#[derive(Debug)]
 pub struct LogLine {
     date: NaiveDateTime,
     event_type: LineType,
@@ -45,14 +47,15 @@ pub fn parse_line(line: &str) -> Result<LogLine, String> {
         .ok_or(format!("Getting captures on line failed: {}", line))?;
 
     // Dates are in the format 2017-07-29T18:27:33.562444Z
-    let cap0 = caps.get(0).ok_or(String::from("No capture group 0 found for log line!"))?;
-    let cap1 = caps.get(1).ok_or(String::from("No capture group 1 found for log line!"))?;
+    let cap1 = caps.get(1).ok_or(String::from("No capture group 0 found for log line!"))?;
     let cap2 = caps.get(2).ok_or(String::from("No capture group 1 found for log line!"))?;
+    let cap3 = caps.get(3).ok_or(String::from("No capture group 1 found for log line!"))?;
 
-    let date = NaiveDateTime::parse_from_str(cap0.as_str(), "%Y-%m-%dT%h:%M:%S%.6fZ")
+    println!("Date capture group: {}", cap1.as_str());
+    let date = NaiveDateTime::parse_from_str(cap1.as_str(), "%Y-%m-%dT%H:%M:%S%.6fZ")
         .map_err(debug)?;
-    let event_type = LineType::try_from(cap1)?;
-    let query: String = cap2.as_str().into();
+    let event_type = LineType::try_from(cap2)?;
+    let query: String = cap3.as_str().into();
 
     Ok(LogLine { date, event_type, query })
 }
