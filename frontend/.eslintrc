@@ -1,0 +1,37 @@
+{
+  "rules": {
+    "indent": [2, 2],
+    "quotes": [2, "single"],
+    "linebreak-style": [2, "unix"],
+    "semi": [2, "always"],
+    "comma-dangle": [2, "only-multiline"],
+    "no-console": 0,
+    "no-global-assign": 0,
+    "no-unused-vars": [1, {"vars": "all", "args": "none"}],
+    "no-multiple-empty-lines": [2, {"max": 1}],
+    "prefer-const": ["error", {
+      "destructuring": "any",
+      "ignoreReadBeforeAssign": false
+    }]
+  },
+  "env": {
+    "es6": true,
+    "browser": true
+  },
+  "extends": ["eslint:recommended"],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "jsx": true
+    },
+    "ecmaVersion": 7
+  },
+  "plugins": [],
+  "globals": {
+    "require": true,
+    "module": true,
+    "Module": true
+  }
+}

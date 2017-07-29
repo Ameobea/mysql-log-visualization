@@ -1,0 +1,8 @@
+[package]
+name = "mysql-viz-backend"
+version = "0.1.0"
+authors = ["Casey Primozic <me@ameo.link>"]
+description = "Parses the log files from a MySQL server and uses them to provide data for a Minutiae simulation."
+
+[dependencies]
+minutiae = { path = "../../minutiae/minutiae" }

@@ -1,0 +1,9 @@
+{
+  "name": "mysql-viz-frontend",
+  "version": "0.1.0",
+  "description": "Web-based utility used to visualize the activity of a MySQL server.",
+  "main": "index.js",
+  "repository": "https://github.com/Ameobea/mysql-log-visualization",
+  "author": "Casey Primozic <me@ameo.link>",
+  "license": "MIT"
+}
