@@ -27,6 +27,8 @@ use self::minu_env::engine::{exec_actions};
 pub mod parser;
 pub mod util;
 
+/// This function is responsible for taking in the three action buffers and determining what to actually send to the
+/// client.  As a result, it produces the actual events that are transmitted to the client.
 fn event_generator_generator() -> impl Fn(
     &mut Universe<CS, ES, MES, CA, EA>, &[OwnedAction<CS, ES, CA, EA>],
     &[OwnedAction<CS, ES, CA, EA>], &[OwnedAction<CS, ES, CA, EA>]
@@ -35,7 +37,8 @@ fn event_generator_generator() -> impl Fn(
         universe: &mut Universe<CS, ES, MES, CA, EA>, self_actions: &[OwnedAction<CS, ES, CA, EA>],
         cell_actions: &[OwnedAction<CS, ES, CA, EA>], entity_actions: &[OwnedAction<CS, ES, CA, EA>]
     | {
-        unimplemented!(); // TODO
+        // unimplemented!(); // TODO
+        None
     }
 }
 

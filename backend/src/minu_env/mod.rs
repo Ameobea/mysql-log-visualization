@@ -23,7 +23,10 @@ impl CellState for CS {}
 impl HybParam for CS {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ES {}
+pub enum ES {
+    Messenger(Option<Vec<LogLine>>),
+    Normal,
+}
 impl EntityState<CS> for ES {}
 impl HybParam for ES {}
 
@@ -39,15 +42,17 @@ impl HybParam for CA {}
 impl CellAction<CS> for CA {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub enum EA {}
+pub enum EA {
+    ClearMessengerState,
+}
 impl EntityAction<CS, ES> for EA {}
 impl HybParam for EA {}
 
 pub struct WG;
 impl Generator<CS, ES, MES, CA, EA> for WG {
-    fn gen(&mut self, conf: &UniverseConf) -> (Vec<Cell<CS>>, Vec<Vec<Entity<CS, ES, MES>>>) {
+    fn gen(&mut self, _: &UniverseConf) -> (Vec<Cell<CS>>, Vec<Vec<Entity<CS, ES, MES>>>) {
         // create a blank universe to start off with
-        ( vec![Cell{ state: CS {} }; 800 * 800], Vec::new() )
+        ( vec![Cell{ state: CS {} }; 800 * 800], vec![vec![Entity::new(ES::Messenger(None), MES {})]])
     }
 }
 
@@ -57,6 +62,7 @@ pub struct OurEvent {
 }
 
 impl Event<CS, ES, MES, CA, EA> for OurEvent {
+    /// This is used on the client side to actually apply the events to the server.
     fn apply(&self, universe: &mut Universe<CS, ES, MES, CA, EA>) {
         unimplemented!(); // TODO
     }
@@ -96,5 +102,11 @@ impl Middleware<
                     },
                 }
             });
+
+        if parsed_lines.len() > 0 {
+            // set them into the state of the messenger entity
+            let messenger_entity = unsafe { universe.entities.get_mut(0) };
+            messenger_entity.state = ES::Messenger(Some(parsed_lines));
+        }
     }
 }

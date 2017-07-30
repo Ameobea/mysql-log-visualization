@@ -7,7 +7,7 @@ use regex::{Captures, Match, Regex};
 
 use util::debug;
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum LineType {
     Connect,
     Query,
@@ -29,14 +29,14 @@ impl<'a> TryFrom<Match<'a>> for LineType {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LogLine {
     date: NaiveDateTime,
     event_type: LineType,
     query_type: Option<QueryType>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum QueryType {
     Insert,
     Select,
