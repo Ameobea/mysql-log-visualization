@@ -1,25 +1,45 @@
 <!doctype html>
-<html lang="en">
+<html lang='en-us'>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="theme-color" content="#000000">
-
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-    <link href="https://fonts.googleapis.com/css?family=Pavanam" rel="stylesheet">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.2/semantic.min.css"></link>
-
-    <!-- Include the minutiae backend script itself -->
-    <script type='text/javascript' src='compiled.js'></script>
-
-    <title>MySQL Log Visualization</title>
+    <meta charset='utf-8'>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+    <title>MySQL Log Visualization Client</title>
+    <style>
+      body {
+        background-color: black;
+      }
+      canvas {
+        /* Pixel-perfect rendering for the canvas */
+        image-rendering: optimizeSpeed;             /* Older versions of FF          */
+        image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+        image-rendering: -webkit-optimize-contrast; /* Safari                        */
+        image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+        image-rendering: pixelated;                 /* Awesome future-browsers       */
+        -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+      }
+    </style>
   </head>
   <body>
-    <noscript>
-      You need to enable JavaScript to run this app.
-    </noscript>
+    <canvas id='canvas' width='800' height='800'>
 
-    <div id="root" style="height: 100%"></div>
+    <script type='text/javascript'>
+      // will be set by a function defined in `library_minutiaeclient` and called by Rust code
+      var socket = null;
+      var Module = {
+        preRun: [],
+        postRun: [],
+        canvas: (function() {
+          var canvas = document.getElementById('canvas');
+          // fill canvas with black to start with so we don't have to copy alpha channel data every tick
+          var ctx = canvas.getContext("2d");
+          ctx.beginPath();
+          ctx.rect(0, 0, canvas.height, canvas.height);
+          ctx.fillStyle = "black";
+          ctx.fill();
+          return canvas;
+        })(),
+      };
+    </script>
+    <script type='text/javascript' src='target/asmjs-unknown-emscripten/release/client.js'></script>
   </body>
 </html>

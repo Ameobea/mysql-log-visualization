@@ -6,6 +6,8 @@ use std::sync::mpsc::Receiver;
 use minutiae::prelude::*;
 use minutiae::engine::iterator::SerialGridIterator;
 use minutiae::engine::parallel::ParallelEngine;
+use minutiae::server::HybParam;
+use minutiae::server::Event;
 
 use parser::{parse_line, LogLine};
 
@@ -15,26 +17,31 @@ pub use self::entity_driver::entity_driver;
 
 pub const UNIVERSE_SIZE: usize = 800;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CS {}
 impl CellState for CS {}
+impl HybParam for CS {}
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ES {}
 impl EntityState<CS> for ES {}
+impl HybParam for ES {}
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 pub struct MES {}
 impl MutEntityState for MES {}
+impl HybParam for MES {}
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum CA {}
+impl HybParam for CA {}
 
 impl CellAction<CS> for CA {}
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum EA {}
 impl EntityAction<CS, ES> for EA {}
+impl HybParam for EA {}
 
 pub struct WG;
 impl Generator<CS, ES, MES, CA, EA> for WG {
@@ -43,6 +50,18 @@ impl Generator<CS, ES, MES, CA, EA> for WG {
         ( vec![Cell{ state: CS {} }; 800 * 800], Vec::new() )
     }
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct OurEvent {
+
+}
+
+impl Event<CS, ES, MES, CA, EA> for OurEvent {
+    fn apply(&self, universe: &mut Universe<CS, ES, MES, CA, EA>) {
+        unimplemented!(); // TODO
+    }
+}
+impl HybParam for OurEvent {}
 
 // dummy function until `cell_mutator` is deprecated entirely
 pub fn cell_mutator(_: usize, _: &[Cell<CS>]) -> Option<CS> { None }
