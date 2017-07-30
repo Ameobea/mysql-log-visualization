@@ -31,9 +31,9 @@ impl<'a> TryFrom<Match<'a>> for LineType {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LogLine {
-    date: NaiveDateTime,
-    event_type: LineType,
-    query_type: Option<QueryType>,
+    pub date: NaiveDateTime,
+    pub event_type: LineType,
+    pub query_type: Option<QueryType>,
 }
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]

@@ -8,6 +8,8 @@ description = "Parses the log files from a MySQL server and uses them to provide
 chrono = { version = "0.4", features = ["serde"] }
 lazy_static = "0.2.8"
 minutiae = { path = "../../minutiae/minutiae", features = ["server"] }
+pcg = { git = "https://github.com/ameobea/pcg.git" }
+rand = "0.3"
 regex = "0.2"
 serde = { version = "1.*.*" }
 serde_derive = { version = "1.*.*" }

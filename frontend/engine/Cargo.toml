@@ -1,0 +1,7 @@
+[package]
+name = "engine"
+version = "0.1.0"
+authors = ["Casey Primozic <me@ameo.link>"]
+
+[dependencies]
+minutiae = { path = "../../minutiae/minutiae", features = ["server"] }

@@ -1,6 +1,7 @@
 //! Defines functions that define the behavior of the engine.
 
 use minutiae::prelude::{Universe, OwnedAction};
+use rand::Rng;
 
 use super::*;
 
@@ -28,7 +29,35 @@ fn exec_cell_action(
     action: &OwnedAction<CS, ES, CA, EA>,
     universe: &mut Universe<CS, ES, MES, CA, EA>
 ) {
-    unimplemented!(); // TODO
+    match &action.action {
+        &Action::CellAction { action: ref inner_action, universe_index } => {
+            match inner_action {
+                &CA::HilightCells(query_type_opt, mut rng) => {
+                    let (mut x, mut y) = get_coords(universe_index, UNIVERSE_SIZE);
+                    // iterate over the selected coordinate until we've set the state for all cells
+                    let mut swapped_entities = 0;
+                    loop {
+                        if swapped_entities >= QUERY_ENTITY_COUNT {
+                            break;
+                        } else {
+                            let (x_offset, y_offset) = (rng.gen_range(-1, 2), rng.gen_range(-1, 2));
+                            let (proposed_x, proposed_y) = (x as isize + x_offset, y as isize + y_offset);
+                            if proposed_x >= 0 && proposed_x < (UNIVERSE_SIZE * UNIVERSE_SIZE) as isize &&
+                               proposed_y >= 0 && proposed_y < (UNIVERSE_SIZE * UNIVERSE_SIZE) as isize {
+                                x = proposed_x as usize;
+                                y = proposed_y as usize;
+                                if universe.cells[get_index(x, y, UNIVERSE_SIZE)].state.highlight_color.is_none() {
+                                    universe.cells[get_index(x, y, UNIVERSE_SIZE)].state.highlight_color = query_type_opt;
+                                    swapped_entities += 1;
+                                }
+                            }
+                        }
+                    }
+                },
+            }
+        },
+        _ => unreachable!(),
+    }
 }
 
 fn exec_self_action(

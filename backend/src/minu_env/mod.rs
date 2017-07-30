@@ -8,17 +8,22 @@ use minutiae::engine::iterator::SerialGridIterator;
 use minutiae::engine::parallel::ParallelEngine;
 use minutiae::server::HybParam;
 use minutiae::server::Event;
+use pcg::PcgRng;
 
 use parser::{parse_line, LogLine};
 
 pub mod engine;
 pub mod entity_driver;
 pub use self::entity_driver::entity_driver;
+use parser::QueryType;
 
 pub const UNIVERSE_SIZE: usize = 800;
+pub const QUERY_ENTITY_COUNT: usize = 25;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct CS {}
+pub struct CS {
+    highlight_color: Option<QueryType>,
+}
 impl CellState for CS {}
 impl HybParam for CS {}
 
@@ -30,13 +35,18 @@ pub enum ES {
 impl EntityState<CS> for ES {}
 impl HybParam for ES {}
 
-#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
-pub struct MES {}
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+pub struct MES {
+    rng: PcgRng,
+}
+impl Default for MES { fn default() -> Self { MES { rng: PcgRng::new_unseeded() } } }
 impl MutEntityState for MES {}
 impl HybParam for MES {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub enum CA {}
+pub enum CA {
+    HilightCells(Option<QueryType>, PcgRng),
+}
 impl HybParam for CA {}
 
 impl CellAction<CS> for CA {}
@@ -52,7 +62,10 @@ pub struct WG;
 impl Generator<CS, ES, MES, CA, EA> for WG {
     fn gen(&mut self, _: &UniverseConf) -> (Vec<Cell<CS>>, Vec<Vec<Entity<CS, ES, MES>>>) {
         // create a blank universe to start off with
-        ( vec![Cell{ state: CS {} }; 800 * 800], vec![vec![Entity::new(ES::Messenger(None), MES {})]])
+        (
+            vec![Cell{ state: CS { highlight_color: None } }; 800 * 800],
+            vec![vec![Entity::new(ES::Messenger(None), MES::default())]]
+        )
     }
 }
 

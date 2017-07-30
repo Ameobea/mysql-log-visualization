@@ -7,6 +7,8 @@ extern crate chrono;
 #[macro_use]
 extern crate lazy_static;
 extern crate minutiae;
+extern crate pcg;
+extern crate rand;
 extern crate regex;
 extern crate serde;
 #[macro_use]
