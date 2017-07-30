@@ -13,4 +13,5 @@ rand = "0.3"
 regex = "0.2"
 serde = { version = "1.*.*" }
 serde_derive = { version = "1.*.*" }
+shared = { path = "../shared" }
 uuid = "0.5.1"

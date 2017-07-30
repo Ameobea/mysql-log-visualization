@@ -5,7 +5,6 @@ use rand::Rng;
 use uuid::Uuid;
 
 use super::*;
-use shared::UNIVERSE_SIZE;
 
 pub fn entity_driver(
     universe_index: usize,

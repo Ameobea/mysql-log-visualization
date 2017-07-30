@@ -13,6 +13,7 @@ extern crate regex;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+extern crate shared;
 extern crate uuid;
 
 use minutiae::prelude::*;
@@ -21,11 +22,11 @@ use minutiae::engine::parallel::{ActionExecutor, ParallelEngine};
 use minutiae::engine::iterator::SerialGridIterator;
 use minutiae::driver::middleware::MinDelay;
 use minutiae::server::{Server, HybridServer};
+use shared::UNIVERSE_SIZE;
 
 pub mod input_reader;
 pub mod minu_env;
 use self::minu_env::*;
-use self::minu_env::engine::{exec_actions};
 pub mod parser;
 pub mod util;
 
@@ -43,6 +44,9 @@ fn event_generator_generator() -> impl Fn(
         None
     }
 }
+
+// dummy function until `cell_mutator` is deprecated entirely
+pub fn cell_mutator(_: usize, _: &[Cell<CS>]) -> Option<CS> { None }
 
 fn main() {
     let rx = input_reader::read_lines();

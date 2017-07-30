@@ -4,7 +4,6 @@ use minutiae::prelude::{Universe, OwnedAction};
 use rand::Rng;
 
 use super::*;
-use shared::{UNIVERSE_SIZE, QUERY_ENTITY_COUNT};
 
 pub fn exec_actions(
     universe: &mut Universe<CS, ES, MES, CA, EA>,

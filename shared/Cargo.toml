@@ -1,16 +1,17 @@
 [package]
-name = "engine"
+name = "shared"
 version = "0.1.0"
 authors = ["Casey Primozic <me@ameo.link>"]
 
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
-lazy_static = "0.2.8"
-minutiae = { path = "../../../minutiae/minutiae", features = ["client"] }
+minutiae = { path = "../../minutiae/minutiae", features = ["client"] }
 pcg = { git = "https://github.com/ameobea/pcg.git" }
 rand = "0.3"
 regex = "0.2"
 serde = { version = "1.*.*" }
 serde_derive = { version = "1.*.*" }
-shared = { path = "../../shared" }
 uuid = "0.5.1"
+
+[replace]
+"libz-sys:1.0.16" = { path = "https://github.com/Ameobea/libz-sys.git" }

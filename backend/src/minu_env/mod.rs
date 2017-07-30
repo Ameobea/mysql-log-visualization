@@ -10,19 +10,18 @@ use minutiae::server::HybParam;
 use minutiae::server::Event;
 use pcg::PcgRng;
 
-use parser::{parse_line, LogLine};
+use parser::parse_line;
+// use shared::*;
+use shared::{LogLine, QueryType};
 
 pub mod engine;
+pub use engine::exec_actions;
 pub mod entity_driver;
-pub use self::entity_driver::entity_driver;
-use parser::QueryType;
-
-pub const UNIVERSE_SIZE: usize = 800;
-pub const QUERY_ENTITY_COUNT: usize = 25;
+pub use entity_driver::entity_driver;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CS {
-    highlight_color: Option<QueryType>,
+    pub highlight_color: Option<QueryType>,
 }
 impl CellState for CS {}
 impl HybParam for CS {}
@@ -81,9 +80,6 @@ impl Event<CS, ES, MES, CA, EA> for OurEvent {
     }
 }
 impl HybParam for OurEvent {}
-
-// dummy function until `cell_mutator` is deprecated entirely
-pub fn cell_mutator(_: usize, _: &[Cell<CS>]) -> Option<CS> { None }
 
 /// Middleware that processes
 pub struct LineProcessorMiddleware {

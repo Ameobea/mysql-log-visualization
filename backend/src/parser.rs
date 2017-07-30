@@ -6,46 +6,7 @@ use chrono::NaiveDateTime;
 use regex::{Captures, Match, Regex};
 
 use util::debug;
-
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
-pub enum LineType {
-    Connect,
-    Query,
-    Quit,
-}
-
-impl<'a> TryFrom<Match<'a>> for LineType {
-    type Error = String;
-
-    fn try_from(m: Match<'a>) -> Result<Self, Self::Error> {
-        let m_str = m.as_str();
-
-        match m_str {
-            "Connect" => Ok(LineType::Connect),
-            "Query" => Ok(LineType::Query),
-            "Quit" => Ok(LineType::Quit),
-            _ => Err(format!("Unable to parse line type of type: {}", m_str)),
-        }
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct LogLine {
-    pub date: NaiveDateTime,
-    pub event_type: LineType,
-    pub query_type: Option<QueryType>,
-}
-
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
-pub enum QueryType {
-    Insert,
-    Select,
-    Update,
-    Delete,
-    Other,
-    Transaction,
-    Setting,
-}
+use shared::{LineType, LogLine, QueryType};
 
 lazy_static! {
     // Regex for parsing lines of the MySQL log.
