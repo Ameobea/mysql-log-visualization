@@ -1,7 +1,7 @@
 //! MySQL Server Log File Visualization Backend.  Provides the log tailing functionality as well as hosting the
 //! Minutiae server to power the visualization and transmit events to the clients.
 
-#![feature(try_from, unboxed_closures)]
+#![feature(conservative_impl_trait, try_from, unboxed_closures)]
 
 extern crate chrono;
 #[macro_use]
@@ -27,11 +27,24 @@ use self::minu_env::engine::{exec_actions};
 pub mod parser;
 pub mod util;
 
+fn event_generator_generator() -> impl Fn(
+    &mut Universe<CS, ES, MES, CA, EA>, &[OwnedAction<CS, ES, CA, EA>],
+    &[OwnedAction<CS, ES, CA, EA>], &[OwnedAction<CS, ES, CA, EA>]
+) -> Option<Vec<OurEvent>> {
+    |
+        universe: &mut Universe<CS, ES, MES, CA, EA>, self_actions: &[OwnedAction<CS, ES, CA, EA>],
+        cell_actions: &[OwnedAction<CS, ES, CA, EA>], entity_actions: &[OwnedAction<CS, ES, CA, EA>]
+    | {
+        unimplemented!(); // TODO
+    }
+}
+
 fn main() {
     let rx = input_reader::read_lines();
 
     // construct the hybrid server that sends events to the clients
-    let (hooked_action_executor, server_logic): (ActionExecutor<CS, ES, MES, CA, EA>, HybridServer<CS, ES, MES, CA, EA, OurEvent>) = HybridServer::hook_handler(exec_actions);
+    let event_generator = event_generator_generator();
+    let (hooked_action_executor, server_logic): (ActionExecutor<CS, ES, MES, CA, EA>, _) = HybridServer::hook_handler(exec_actions, event_generator);
     let seq = server_logic.seq.clone();
     let server = Box::new(Server::new(UNIVERSE_SIZE, "localhost:3012", server_logic, seq));
 

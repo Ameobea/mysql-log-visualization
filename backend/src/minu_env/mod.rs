@@ -32,13 +32,13 @@ pub struct MES {}
 impl MutEntityState for MES {}
 impl HybParam for MES {}
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum CA {}
 impl HybParam for CA {}
 
 impl CellAction<CS> for CA {}
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum EA {}
 impl EntityAction<CS, ES> for EA {}
 impl HybParam for EA {}
@@ -51,7 +51,7 @@ impl Generator<CS, ES, MES, CA, EA> for WG {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct OurEvent {
 
 }
