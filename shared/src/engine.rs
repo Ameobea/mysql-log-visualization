@@ -25,7 +25,7 @@ pub fn exec_actions(
     }
 }
 
-fn exec_cell_action(
+pub fn exec_cell_action(
     action: &OwnedAction<CS, ES, CA, EA>,
     universe: &mut Universe<CS, ES, MES, CA, EA>
 ) {
@@ -60,7 +60,7 @@ fn exec_cell_action(
     }
 }
 
-fn exec_self_action(
+pub fn exec_self_action(
     action: &OwnedAction<CS, ES, CA, EA>,
     universe: &mut Universe<CS, ES, MES, CA, EA>
 ) {
@@ -86,7 +86,7 @@ fn exec_self_action(
     }
 }
 
-fn exec_entity_action(
+pub fn exec_entity_action(
     action: &OwnedAction<CS, ES, CA, EA>,
     universe: &mut Universe<CS, ES, MES, CA, EA>
 ) {

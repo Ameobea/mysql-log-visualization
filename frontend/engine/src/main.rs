@@ -5,10 +5,10 @@ extern crate shared;
 
 use minutiae::prelude::*;
 use minutiae::emscripten::{CanvasRenderer, EmscriptenDriver};
-use minutiae::engine::parallel::ParallelEngine;
-use minutiae::engine::iterator::SerialGridIterator;
+use minutiae::engine::serial::SerialEngine;
+use minutiae::engine::iterator::{SerialEntityIterator, SerialGridIterator};
 use shared::*;
-use shared::engine::exec_actions;
+use shared::engine::{exec_actions, exec_self_action, exec_cell_action, exec_entity_action};
 
 extern {
    fn canvas_render(ptr: *const u8);
@@ -33,6 +33,26 @@ pub fn calc_color(
     }
 }
 
+struct OurEngine;
+impl SerialEngine<CS, ES, MES, CA, EA, SerialGridIterator, SerialEntityIterator<CS, ES>> for OurEngine {
+    fn iter_cells(&self, cells: &[Cell<CS>]) -> SerialGridIterator {
+        SerialGridIterator::new(UNIVERSE_SIZE)
+    }
+
+    fn iter_entities(&self, entities: &[Vec<Entity<CS, ES, MES>>]) -> SerialEntityIterator<CS, ES> {
+        SerialEntityIterator::new(UNIVERSE_SIZE)
+    }
+
+    fn exec_actions(
+        &self, mut universe: &mut Universe<CS, ES, MES, CA, EA>, cell_actions: &[OwnedAction<CS, ES, CA, EA>],
+        self_actions: &[OwnedAction<CS, ES, CA, EA>], entity_actions: &[OwnedAction<CS, ES, CA, EA>]
+    ) {
+        for cell_action in cell_actions { exec_cell_action(cell_action, &mut universe); }
+        for self_action in self_actions { exec_self_action(self_action, universe); }
+        for entity_action in entity_actions { exec_entity_action(entity_action, universe); }
+    }
+}
+
 fn main() {
     // initialize the minutiae sim
     let conf = UniverseConf {
@@ -42,10 +62,10 @@ fn main() {
     };
     let universe = Universe::new(conf, &mut WG, cell_mutator, entity_driver);
     let driver = EmscriptenDriver;
-    let engine = ParallelEngine::new(SerialGridIterator::new(UNIVERSE_SIZE * UNIVERSE_SIZE), Box::new(exec_actions), entity_driver);
+    let engine: Box<SerialEngine<CS, ES, MES, CA, EA, SerialGridIterator, SerialEntityIterator<CS, ES>>> = Box::new(OurEngine);
 
     // block on the simulation, looping and processing incoming log lines for the life of the application
-    driver.init(universe, Box::new(engine), &mut [
+    driver.init(universe, engine, &mut [
         Box::new(CanvasRenderer::new(UNIVERSE_SIZE, calc_color, canvas_render))
     ]);
 }
